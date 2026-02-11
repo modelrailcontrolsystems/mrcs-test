@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+
+"""
+Created on 11 Feb 2026
+
+@author: Bruno Beloff (bbeloff@me.com)
+
+source repo: mrcs_test
+
+DESCRIPTION
+A tool that runs the MRCS services in test mode.
+
+SYNOPSIS
+mrcs_services [-h] [-v] [--version]
+
+EXAMPLES
+mrcs_services -v
+"""
+
+import sys
+
+from mrcs_core.sys.logging import Logging
+from mrcs_test.cli.args.services_args import ServicesArgs
+from mrcs_test.internal.services import Services
+
+
+# --------------------------------------------------------------------------------------------------------------------
+
+if __name__ == '__main__':
+
+    # ----------------------------------------------------------------------------------------------------------------
+
+    args = ServicesArgs('runs the MRCS services in test mode')
+
+    Logging.config('mrcs_services', verbose=args.verbose)
+    logger = Logging.getLogger()
+    logger.info(f'args: {args}')
+
+    # ----------------------------------------------------------------------------------------------------------------
+
+    try:
+        p = Services.start(args.verbose)
+        p.wait()
+
+    # ----------------------------------------------------------------------------------------------------------------
+
+    except KeyboardInterrupt:
+        print(file=sys.stderr)
