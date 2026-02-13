@@ -39,12 +39,11 @@ if __name__ == '__main__':
     # ----------------------------------------------------------------------------------------------------------------
 
     try:
-        p = Services.start(args.verbose)
-
-        if p:
-            p.wait()
+        Services.start(silent=not args.verbose)
+        Services.wait()
 
     # ----------------------------------------------------------------------------------------------------------------
 
     except KeyboardInterrupt:
+        Services.stop()
         print(file=sys.stderr)
