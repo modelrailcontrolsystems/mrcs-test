@@ -6,7 +6,7 @@ Created on 13 Feb 2026
 A wrapper for Popen to simplify invocation of command-line utilities
 """
 
-from subprocess import Popen, PIPE
+from subprocess import PIPE, Popen
 
 from mrcs_core.sys.env_paths import EnvPaths
 
@@ -65,10 +65,8 @@ class CLI(object):
         str_args = [str(arg) for arg in cmd_args if arg is not None]
 
         with Popen(str_args, stdout=PIPE, stderr=PIPE, env=cls.env) as p:
-            p.wait()
-
-            stdout = p.stdout.read().decode().strip()
-            stderr = p.stderr.read().decode().strip()
+            stdout_bytes, stderr_bytes = p.communicate()
+            stdout = stdout_bytes.decode().strip()
+            stderr = stderr_bytes.decode().strip()
             returncode = p.returncode
-
         return CLIResponse(stdout, stderr, returncode)
