@@ -10,7 +10,7 @@ Since no process should launch services more than once, the services collection 
 
 import signal
 import sys
-from subprocess import Popen, DEVNULL
+from subprocess import DEVNULL, Popen
 
 from mrcs_core.sys.env_paths import EnvPaths
 
@@ -23,11 +23,11 @@ class Services(object):
     """
 
     __CMD_ARGS = [
-        ['mrcs_clock_manager', '--verbose', '--test', '--subscribe'],
-        ['mrcs_recorder', '--verbose', '--test', '--clean', '--subscribe'],
-        ['mrcs_cron', '--verbose', '--test', '--clean', '--run-save'],
-        ['mrcs_crontab', '--verbose', '--test', '--subscribe'],
-        ['mrcs_uvicorn', '--verbose', '--test', '--reload']
+        ['mrcs_control_clock_manager', '--verbose', '--test', '--subscribe'],
+        ['mrcs_control_recorder', '--verbose', '--test', '--clean', '--subscribe'],
+        ['mrcs_control_cron', '--verbose', '--test', '--clean', '--run-save'],
+        ['mrcs_control_crontab', '--verbose', '--test', '--subscribe'],
+        ['mrcs_api_uvicorn', '--verbose', '--test', '--reload']
     ]
 
     __services = []

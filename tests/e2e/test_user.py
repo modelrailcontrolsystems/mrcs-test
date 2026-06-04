@@ -31,7 +31,7 @@ class TestCLI(unittest.TestCase):
 
         Services.start(silent=silent)
         time.sleep(2)
-        CLI.popen(['mrcs_session', '-c', 'bbeloff1@me.com', 'pass'])
+        CLI.popen(['mrcs_cli_session', '-c', 'bbeloff1@me.com', 'pass'])
 
 
     @classmethod
@@ -42,23 +42,23 @@ class TestCLI(unittest.TestCase):
     # ----------------------------------------------------------------------------------------------------------------
 
     def test_session_create_fail(self):
-        r = CLI.popen(['mrcs_session', '-c', 'bbeloff1@me.com', 'fail'])
+        r = CLI.popen(['mrcs_cli_session', '-c', 'bbeloff1@me.com', 'fail'])
         self.assertEqual(r.returncode, 1)
-        self.assertEqual(r.stderr, 'mrcs_session: HTTPResponseException: '
-                                   'HTTPResponse: 400: Bad Request: incorrect username or password')
+        self.assertEqual(r.stderr, 'mrcs_cli_session: HTTPResponseException: HTTPResponse: 400: '
+                                   'Bad Request: incorrect username or password')
 
 
     def test_session_create(self):
-        r = CLI.popen(['mrcs_session', '-c', 'bbeloff1@me.com', 'pass'])
+        r = CLI.popen(['mrcs_cli_session', '-c', 'bbeloff1@me.com', 'pass'])
         self.assertEqual(r.returncode, 0)
         self.assertEqual(r.stderr, '')
 
 
     def test_user_self(self):
-        r = CLI.popen(['mrcs_users', '-s'])
+        r = CLI.popen(['mrcs_cli_users', '-s'])
         user = User.construct_from_jdict(json.loads(r.stdout))
         self.assertEqual(user.email, 'bbeloff1@me.com')
 
 
-if __name__ == "__main_":
+if __name__ == "__main__":
     unittest.main()
