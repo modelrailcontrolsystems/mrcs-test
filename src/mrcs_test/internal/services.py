@@ -27,6 +27,7 @@ class Services(object):
         ['mrcs_control_recorder', '--verbose', '--test', '--clean', '--subscribe'],
         ['mrcs_control_cron', '--verbose', '--test', '--clean', '--run-save'],
         ['mrcs_control_crontab', '--verbose', '--test', '--subscribe'],
+        ['mrcs_control_router', '--verbose', '--test', '--run'],
         ['mrcs_api_uvicorn', '--verbose', '--test', '--reload']
     ]
 
@@ -42,7 +43,8 @@ class Services(object):
         env = EnvPaths.construct().as_dict()
 
         for cmd_args in cls.__CMD_ARGS:
-            cls.__services.append(Popen(cmd_args, stdout=stdout, stderr=stderr, env=env))
+            cls.__services.append(Popen(cmd_args, stdout=stdout, stderr=stderr, env=env,
+                                        start_new_session=True))
 
 
     @classmethod
@@ -54,7 +56,10 @@ class Services(object):
     @classmethod
     def stop(cls):
         for service in cls.__services:
-            service.send_signal(signal.SIGINT)
+            if service.poll() is None:
+                service.send_signal(signal.SIGINT)
+
+        for service in cls.__services:
             service.wait()
 
         cls.__services = []
