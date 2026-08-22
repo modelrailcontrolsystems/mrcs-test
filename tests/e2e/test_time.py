@@ -61,6 +61,7 @@ class TestCLI(unittest.TestCase):
 
     def test_crontab(self):
         CLI.popen(['mrcs_control_recorder', '-t', '-c', '-r', 1])
+        CLI.popen(['mrcs_control_cron', '-t', '-c', '-l'])
 
         r = CLI.popen(['mrcs_cli_time', '-s', '-sr', '-ss', 4, '-sy', 1930, '-sm', 1, '-sd', 2, '-sh', 6])
         datetime = ISODatetime.construct_from_jdict(json.loads(r.stdout))
@@ -80,6 +81,7 @@ class TestCLI(unittest.TestCase):
 
     def test_cron(self):
         CLI.popen(['mrcs_control_recorder', '-t', '-c', '-r', 1])
+        CLI.popen(['mrcs_control_cron', '-t', '-c', '-l'])
 
         r = CLI.popen(['mrcs_cli_time', '-s', '-sr', '-ss', 4, '-sy', 1930, '-sm', 1, '-sd', 2, '-sh', 6])
         datetime = ISODatetime.construct_from_jdict(json.loads(r.stdout))
