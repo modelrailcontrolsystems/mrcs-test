@@ -1,0 +1,8 @@
+[run]
+source =
+    mrcs_api
+    mrcs_cli
+    mrcs_control
+    mrcs_core
+disable_warnings =
+    module-not-imported
