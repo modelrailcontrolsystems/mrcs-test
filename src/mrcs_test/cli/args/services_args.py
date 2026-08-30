@@ -18,6 +18,9 @@ class ServicesArgs(object):
     def __init__(self, description):
         self._parser = argparse.ArgumentParser(description=description)
 
+        self._parser.add_argument('-t', '--test', action='store_true',
+                                  help='run services in test mode')
+
         self._parser.add_argument('-v', '--verbose', action='store_true',
                                   help='report narrative to stderr')
 
@@ -30,6 +33,11 @@ class ServicesArgs(object):
     # ----------------------------------------------------------------------------------------------------------------
 
     @property
+    def test(self):
+        return self._args.test
+
+
+    @property
     def verbose(self):
         return self._args.verbose
 
@@ -37,4 +45,4 @@ class ServicesArgs(object):
     # ----------------------------------------------------------------------------------------------------------------
 
     def __str__(self, *args, **kwargs):
-        return f'ServicesArgs:{{verbose:{self.verbose}}}'
+        return f'ServicesArgs:{{test:{self.test}, verbose:{self.verbose}}}'
