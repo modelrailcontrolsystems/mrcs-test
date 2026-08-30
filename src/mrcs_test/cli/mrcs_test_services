@@ -11,10 +11,10 @@ DESCRIPTION
 A tool that runs the MRCS services in test mode.
 
 SYNOPSIS
-mrcs_services [-h] [-v] [--version]
+mrcs_test_services [-h] [-v] [-t] [--version]
 
 EXAMPLES
-mrcs_services -v
+mrcs_test_services -v -t
 """
 
 import sys
@@ -32,14 +32,14 @@ if __name__ == '__main__':
 
     args = ServicesArgs('runs the MRCS services in test mode')
 
-    Logging.config('mrcs_services', verbose=args.verbose)
+    Logging.config('mrcs_test_services', verbose=args.verbose)
     logger = Logging.getLogger()
     logger.info(f'args: {args}')
 
     # ----------------------------------------------------------------------------------------------------------------
 
     try:
-        Services.start(silent=not args.verbose)
+        Services.start(silent=not args.verbose, test_mode=args.test)
         Services.wait()
 
     # ----------------------------------------------------------------------------------------------------------------

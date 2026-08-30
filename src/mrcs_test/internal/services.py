@@ -22,13 +22,14 @@ class Services(object):
     the application services required for MRCS operations to run
     """
 
-    __CMD_ARGS = [
-        ['mrcs_control_clock_manager', '--verbose', '--test', '--subscribe'],
-        ['mrcs_control_recorder', '--verbose', '--test', '--clean', '--subscribe'],
-        ['mrcs_control_cron', '--verbose', '--test', '--clean', '--run-save'],
-        ['mrcs_control_crontab', '--verbose', '--test', '--subscribe'],
-        ['mrcs_control_router', '--verbose', '--test', '--run'],
-        ['mrcs_api_uvicorn', '--verbose', '--test', '--reload']
+    __COMMANDS = [
+        ['mrcs_control_clock_manager', '--verbose', '--subscribe'],
+        ['mrcs_control_cron', '--verbose', '--clean', '--run-save'],
+        ['mrcs_control_crontab', '--verbose', '--subscribe'],
+        ['mrcs_control_recorder', '--verbose', '--clean', '--subscribe'],
+        ['mrcs_control_router', '--verbose', '--run'],
+        ['mrcs_control_track', '--verbose', '--drain', '--run'],
+        ['mrcs_api_uvicorn', '--verbose', '--reload']
     ]
 
     __services = []
@@ -37,13 +38,16 @@ class Services(object):
     # ----------------------------------------------------------------------------------------------------------------
 
     @classmethod
-    def start(cls, silent=False):
+    def start(cls, silent: bool = False, test_mode: bool = False):
         stdout = DEVNULL if silent else sys.stdout
         stderr = DEVNULL if silent else sys.stderr
         env = EnvPaths.construct().as_dict()
 
-        for cmd_args in cls.__CMD_ARGS:
-            cls.__services.append(Popen(cmd_args, stdout=stdout, stderr=stderr, env=env,
+        for command in cls.__COMMANDS:
+            if test_mode:
+                command.append('--test')
+
+            cls.__services.append(Popen(command, stdout=stdout, stderr=stderr, env=env,
                                         start_new_session=True))
 
 

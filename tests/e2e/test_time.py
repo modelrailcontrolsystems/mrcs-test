@@ -29,7 +29,7 @@ class TestCLI(unittest.TestCase):
     def setUpClass(cls):
         silent = True
 
-        Services.start(silent=silent)
+        Services.start(silent=silent, test_mode=True)
         time.sleep(2)
         CLI.popen(['mrcs_cli_session', '-c', 'bbeloff1@me.com', 'pass'])
 
