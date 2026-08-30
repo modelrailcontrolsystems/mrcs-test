@@ -55,8 +55,8 @@ class TestUnit(unittest.TestCase):
         if 'mrcs_control.messaging.mq_topology' in sys.modules:
             mq_topology = sys.modules['mrcs_control.messaging.mq_topology']
             if hasattr(mq_topology, 'MQTopology'):
-                mq_topology.MQTopology.SINGLE.value._QueueConfiguration__queue_name = None
-                mq_topology.MQTopology.MULTIPLE.value._QueueConfiguration__queue_name = None
+                mq_topology.MQTopology.SINGLE_PROCESS.value._QueueConfiguration__queue_name = None
+                mq_topology.MQTopology.MULTI_PROCESS.value._QueueConfiguration__queue_name = None
 
         if 'mrcs_control.test.test_helper' in sys.modules:
             control_test_helper = sys.modules['mrcs_control.test.test_helper']
