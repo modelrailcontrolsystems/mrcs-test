@@ -26,7 +26,8 @@ class Services(object):
         ['mrcs_control_clock_manager', '--verbose', '--subscribe'],
         ['mrcs_control_cron', '--verbose', '--clean', '--run-save'],
         ['mrcs_control_crontab', '--verbose', '--subscribe'],
-        ['mrcs_control_recorder', '--verbose', '--clean', '--subscribe'],
+        ['mrcs_control_mpu', '--verbose', '--drain', '--run'],
+        ['mrcs_control_recorder', '--verbose', '--drain', '--clean', '--subscribe'],
         ['mrcs_control_router', '--verbose', '--run'],
         ['mrcs_control_track', '--verbose', '--drain', '--run'],
         ['mrcs_api_uvicorn', '--verbose', '--reload']
