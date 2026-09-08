@@ -33,7 +33,7 @@ class Services(object):
     the application services required for MRCS operations to run
     """
 
-    __COMMANDS = [
+    __BACKEND_COMMANDS = [
         ['mrcs_control_clock_manager', '--verbose', '--subscribe'],
         ['mrcs_control_cron', '--verbose', '--clean', '--run-save'],
         ['mrcs_control_crontab', '--verbose', '--subscribe'],
@@ -41,16 +41,32 @@ class Services(object):
         ['mrcs_control_recorder', '--verbose', '--drain', '--clean', '--subscribe'],
         ['mrcs_control_router', '--verbose', '--run'],
         ['mrcs_control_track', '--verbose', '--drain', '--run'],
+    ]
+
+    __UVICORN_COMMANDS = [
         ['mrcs_api_uvicorn', '--verbose', '--reload']
     ]
 
-    __services = []
+
+    @classmethod
+    def commands(cls, run_backend: bool, run_uvicorn: bool) -> list[list[str]]:
+        commands = []
+
+        if run_backend:
+            commands.extend(cls.__BACKEND_COMMANDS)
+        if run_uvicorn:
+            commands.extend(cls.__UVICORN_COMMANDS)
+
+        return commands
+
+
+    __SERVICES = []
 
 
     # ----------------------------------------------------------------------------------------------------------------
 
     @classmethod
-    def find_running_services(cls) -> list[str]:
+    def find_running_services(cls, commands: list[list[str]]) -> list[str]:
         """
         Scans the system process table for any active MRCS service binaries.
         Returns a list of matching process descriptions.
@@ -58,7 +74,7 @@ class Services(object):
         current_pid = str(os.getpid())
         running = []
 
-        for command in cls.__COMMANDS:
+        for command in commands:
             cmd_name = command[0]
             res = subprocess.run(
                 ['pgrep', '-f', '-l', cmd_name],
@@ -81,15 +97,17 @@ class Services(object):
 
 
     @classmethod
-    def is_running(cls) -> bool:
-        return bool(cls.find_running_services())
+    def is_running(cls, commands: list[list[str]]) -> bool:
+        return bool(cls.find_running_services(commands))
 
 
     # ----------------------------------------------------------------------------------------------------------------
 
     @classmethod
-    def start(cls, silent: bool = False, test_mode: bool = False):
-        running = cls.find_running_services()
+    def start(cls, run_backend: bool, run_uvicorn: bool, silent: bool = False, test_mode: bool = False):
+        commands = cls.commands(run_backend, run_uvicorn)
+        running = cls.find_running_services(commands)
+
         if running:
             mode_str = 'test mode' if test_mode else 'standard mode'
             conflicts = ', '.join(running)
@@ -100,29 +118,29 @@ class Services(object):
         stderr = DEVNULL if silent else sys.stderr
         env = EnvPaths.construct().as_dict()
 
-        cls.__services = []
-        for command in cls.__COMMANDS:
+        cls.__SERVICES = []
+        for command in commands:
             cmd = list(command)
             if test_mode:
                 cmd.append('--test')
 
-            cls.__services.append(Popen(cmd, stdout=stdout, stderr=stderr, env=env,
+            cls.__SERVICES.append(Popen(cmd, stdout=stdout, stderr=stderr, env=env,
                                         start_new_session=True))
 
 
     @classmethod
     def wait(cls):
-        for service in cls.__services:
+        for service in cls.__SERVICES:
             service.wait()
 
 
     @classmethod
     def stop(cls):
-        for service in cls.__services:
+        for service in cls.__SERVICES:
             if service.poll() is None:
                 service.send_signal(signal.SIGINT)
 
-        for service in cls.__services:
+        for service in cls.__SERVICES:
             service.wait()
 
-        cls.__services = []
+        cls.__SERVICES = []
