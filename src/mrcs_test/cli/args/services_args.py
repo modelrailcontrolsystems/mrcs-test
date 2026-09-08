@@ -4,45 +4,56 @@ Created on 11 Feb 2026
 @author: Bruno Beloff (bbeloff@me.com)
 """
 
-import argparse
-
-from mrcs_core import version
+from mrcs_core.cli.args.multimode_args import MultimodeArgs
 
 
 # --------------------------------------------------------------------------------------------------------------------
 
-class ServicesArgs(object):
+class ServicesArgs(MultimodeArgs):
     """unix command line handler"""
 
 
     def __init__(self, description):
-        self._parser = argparse.ArgumentParser(description=description)
+        super().__init__(description)
 
-        self._parser.add_argument('-t', '--test', action='store_true',
-                                  help='run services in test mode')
+        group = self._parser.add_mutually_exclusive_group(required=True)
 
-        self._parser.add_argument('-v', '--verbose', action='store_true',
-                                  help='report narrative to stderr')
-
-        self._parser.add_argument('--version', action='version',
-                                  version=f'{self._parser.prog} {version()}')
+        group.add_argument('-b', '--backend', action='store_true', help='run backend services only')
+        group.add_argument('-u', '--uvicorn', action='store_true', help='run uvicorn service only')
+        group.add_argument('-a', '--all', action='store_true', help='run all services')
 
         self._args = self._parser.parse_args()
 
 
     # ----------------------------------------------------------------------------------------------------------------
 
+    def run_backend(self):
+        return self.backend or self.all
+
+
+    def run_uvicorn(self):
+        return self.uvicorn or self.all
+
+
+    # ----------------------------------------------------------------------------------------------------------------
+
     @property
-    def test(self):
-        return self._args.test
+    def backend(self):
+        return self._args.backend
 
 
     @property
-    def verbose(self):
-        return self._args.verbose
+    def uvicorn(self):
+        return self._args.uvicorn
+
+
+    @property
+    def all(self):
+        return self._args.all
 
 
     # ----------------------------------------------------------------------------------------------------------------
 
     def __str__(self, *args, **kwargs):
-        return f'ServicesArgs:{{test:{self.test}, verbose:{self.verbose}}}'
+        return (f'ServicesArgs:{{test:{self.test}, uvicorn:{self.uvicorn}, backend:{self.backend}, all:{self.all}, '
+                f'indent:{self.indent}, verbose:{self.verbose}}}')
