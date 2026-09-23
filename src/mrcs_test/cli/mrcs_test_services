@@ -39,7 +39,8 @@ if __name__ == '__main__':
     # ----------------------------------------------------------------------------------------------------------------
 
     try:
-        Services.start(args.run_backend(), args.run_uvicorn(), silent=not args.verbose, test_mode=args.test)
+        Services.start(args.run_backend(), args.run_uvicorn(), test_mode=args.test, populate=args.populate,
+                       silent=not args.verbose)
         Services.wait()
 
     # ----------------------------------------------------------------------------------------------------------------

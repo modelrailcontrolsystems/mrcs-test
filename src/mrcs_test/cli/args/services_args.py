@@ -16,8 +16,9 @@ class ServicesArgs(MultimodeArgs):
     def __init__(self, description):
         super().__init__(description)
 
-        group = self._parser.add_mutually_exclusive_group(required=True)
+        self._parser.add_argument('-p', '--populate', action='store_true', help='populate database')
 
+        group = self._parser.add_mutually_exclusive_group(required=True)
         group.add_argument('-b', '--backend', action='store_true', help='run backend services only')
         group.add_argument('-u', '--uvicorn', action='store_true', help='run uvicorn service only')
         group.add_argument('-a', '--all', action='store_true', help='run all services')
@@ -26,6 +27,11 @@ class ServicesArgs(MultimodeArgs):
 
 
     # ----------------------------------------------------------------------------------------------------------------
+
+    @property
+    def populate(self):
+        return self._args.populate
+
 
     def run_backend(self):
         return self.backend or self.all
@@ -55,5 +61,6 @@ class ServicesArgs(MultimodeArgs):
     # ----------------------------------------------------------------------------------------------------------------
 
     def __str__(self, *args, **kwargs):
-        return (f'ServicesArgs:{{test:{self.test}, uvicorn:{self.uvicorn}, backend:{self.backend}, all:{self.all}, '
-                f'indent:{self.indent}, verbose:{self.verbose}}}')
+        return (
+            f'ServicesArgs:{{test:{self.test}, populate:{self.populate}, uvicorn:{self.uvicorn}, '
+            f'backend:{self.backend}, all:{self.all}, indent:{self.indent}, verbose:{self.verbose}}}')
