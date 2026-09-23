@@ -43,17 +43,28 @@ class Services(object):
         ['mrcs_control_track', '--verbose', '--drain', '--run'],
     ]
 
+    __BACKEND_POPULATE_COMMANDS = [
+        ['mrcs_control_clock_manager', '--verbose', '--subscribe'],
+        ['mrcs_control_cron', '--verbose', '--clean', '--run-save'],
+        ['mrcs_control_crontab', '--verbose', '--subscribe'],
+        ['mrcs_control_mpu', '--verbose', '--populate', '--drain', '--run'],
+        ['mrcs_control_recorder', '--verbose', '--drain', '--clean', '--subscribe'],
+        ['mrcs_control_router', '--verbose', '--run'],
+        ['mrcs_control_track', '--verbose', '--populate', '--drain', '--run'],
+    ]
+
     __UVICORN_COMMANDS = [
         ['mrcs_api_uvicorn', '--verbose', '--reload']
     ]
 
 
     @classmethod
-    def commands(cls, run_backend: bool, run_uvicorn: bool) -> list[list[str]]:
+    def commands(cls, run_backend: bool, run_uvicorn: bool, populate=False) -> list[list[str]]:
         commands = []
 
         if run_backend:
-            commands.extend(cls.__BACKEND_COMMANDS)
+            commands.extend(cls.__BACKEND_POPULATE_COMMANDS if populate else cls.__BACKEND_COMMANDS)
+
         if run_uvicorn:
             commands.extend(cls.__UVICORN_COMMANDS)
 
@@ -104,8 +115,9 @@ class Services(object):
     # ----------------------------------------------------------------------------------------------------------------
 
     @classmethod
-    def start(cls, run_backend: bool, run_uvicorn: bool, silent: bool = False, test_mode: bool = False):
-        commands = cls.commands(run_backend, run_uvicorn)
+    def start(cls, run_backend: bool, run_uvicorn: bool, test_mode: bool = False, populate: bool = False,
+              silent: bool = False):
+        commands = cls.commands(run_backend, run_uvicorn, populate=populate)
         running = cls.find_running_services(commands)
 
         if running:
