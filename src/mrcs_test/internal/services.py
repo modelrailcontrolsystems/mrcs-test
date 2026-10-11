@@ -34,22 +34,22 @@ class Services(object):
     """
 
     __BACKEND_COMMANDS = [
-        ['mrcs_control_clock_manager', '--verbose', '--subscribe'],
-        ['mrcs_control_cron', '--verbose', '--clean', '--run-save'],
-        ['mrcs_control_crontab', '--verbose', '--subscribe'],
+        ['mrcs_control_clock_manager', '--verbose', '--drain', '--subscribe'],
+        ['mrcs_control_cron', '--verbose', '--clean', '--drain', '--run-save'],
+        ['mrcs_control_crontab', '--verbose', '--drain', '--subscribe'],
         ['mrcs_control_mpu', '--verbose', '--drain', '--run'],
         ['mrcs_control_recorder', '--verbose', '--drain', '--clean', '--subscribe'],
-        ['mrcs_control_router', '--verbose', '--run'],
+        ['mrcs_control_router', '--verbose', '--drain', '--run'],
         ['mrcs_control_track', '--verbose', '--drain', '--run'],
     ]
 
     __BACKEND_POPULATE_COMMANDS = [
-        ['mrcs_control_clock_manager', '--verbose', '--subscribe'],
-        ['mrcs_control_cron', '--verbose', '--clean', '--run-save'],
-        ['mrcs_control_crontab', '--verbose', '--subscribe'],
+        ['mrcs_control_clock_manager', '--verbose', '--drain', '--subscribe'],
+        ['mrcs_control_cron', '--verbose', '--clean', '--drain', '--run-save'],
+        ['mrcs_control_crontab', '--verbose', '--drain', '--subscribe'],
         ['mrcs_control_mpu', '--verbose', '--populate', '--drain', '--run'],
         ['mrcs_control_recorder', '--verbose', '--drain', '--clean', '--subscribe'],
-        ['mrcs_control_router', '--verbose', '--run'],
+        ['mrcs_control_router', '--verbose', '--drain', '--run'],
         ['mrcs_control_track', '--verbose', '--populate', '--drain', '--run'],
     ]
 
