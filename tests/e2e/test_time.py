@@ -13,6 +13,7 @@ import time
 import unittest
 
 from mrcs_core.data.iso_datetime import ISODatetime
+from mrcs_core.equipment.equipment_enums import CLK
 from mrcs_test.internal.cli import CLI
 from mrcs_test.internal.services import Services
 
@@ -68,7 +69,7 @@ class TestCLI(unittest.TestCase):
         self.assertIsNotNone(datetime)
 
         message = '{"event_id": "abc", "on": "1930-01-02T06:01:00.000"}'
-        CLI.popen(['mrcs_cli_publisher', '-t', 'CLK', '-b', 0, '-n', 3, '-m', message])
+        CLI.popen(['mrcs_cli_publisher', '-t', 'CLK', '-b', 0, '-n', CLK.CRONTAB.value, '-m', message])
 
         r = CLI.popen(['mrcs_control_crontab', '-t', '-l'])
         jdict = json.loads(r.stdout)
@@ -88,7 +89,7 @@ class TestCLI(unittest.TestCase):
         self.assertIsNotNone(datetime)
 
         message = '{"event_id": "abc", "on": "1930-01-02T06:00:12.000"}'
-        CLI.popen(['mrcs_cli_publisher', '-t', 'CLK', '-b', 0, '-n', 3, '-m', message])
+        CLI.popen(['mrcs_cli_publisher', '-t', 'CLK', '-b', 0, '-n', CLK.CRONTAB.value, '-m', message])
 
         time.sleep(4)
 
