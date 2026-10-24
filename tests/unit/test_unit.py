@@ -6,6 +6,7 @@ Created on 29 Aug 2026
 python -m unittest -v mrcs-test/tests/unit/test_unit.py
 """
 
+import subprocess
 import sys
 import unittest
 from pathlib import Path
@@ -30,88 +31,22 @@ class TestUnit(unittest.TestCase):
 
     # ----------------------------------------------------------------------------------------------------------------
 
-    @classmethod
-    def setUpClass(cls):
-        cls._reset_state()
-
-
-    @classmethod
-    def tearDownClass(cls):
-        cls._reset_state()
-
-
-    def setUp(self):
-        self._reset_state()
-
-
-    def tearDown(self):
-        self._reset_state()
-
-
-    # ----------------------------------------------------------------------------------------------------------------
-
-    @classmethod
-    def _reset_state(cls):
-        if 'mrcs_control.messaging.mq_topology' in sys.modules:
-            mq_topology = sys.modules['mrcs_control.messaging.mq_topology']
-            if hasattr(mq_topology, 'MQTopology'):
-                mq_topology.MQTopology.SINGLE_PROCESS.value._QueueConfiguration__queue_name = None
-                mq_topology.MQTopology.MULTI_PROCESS.value._QueueConfiguration__queue_name = None
-
-        if 'mrcs_control.test.test_helper' in sys.modules:
-            control_test_helper = sys.modules['mrcs_control.test.test_helper']
-            if hasattr(control_test_helper, 'TestHelper'):
-                try:
-                    control_test_helper.TestHelper.dbTeardown()
-                except Exception:
-                    pass
-
-        if 'mrcs_api.test.test_helper' in sys.modules:
-            test_helper = sys.modules['mrcs_api.test.test_helper']
-            if hasattr(test_helper, 'TestHelper'):
-                try:
-                    test_helper.TestHelper.dbTeardown()
-                except Exception:
-                    pass
-
-
     def _run_stage(self, module_name: str, unit_dir: Path):
-        self._reset_state()
-
+        # each stage runs in a fresh interpreter, so no module state (e.g. the embedded SWI-Prolog engine) is shared
         if not unit_dir.exists():
             return
 
         test_root = str(unit_dir)
-        added_to_path = False
-        if test_root not in sys.path:
-            sys.path.insert(0, test_root)
-            added_to_path = True
+        command = [sys.executable, '-m', 'unittest', 'discover', '-s', test_root, '-t', test_root]
 
-        before_modules = set(sys.modules.keys())
+        sys.stdout.flush()
+        result = subprocess.run(command)
 
-        try:
-            loader = unittest.TestLoader()
-            suite = loader.discover(start_dir=str(unit_dir), top_level_dir=test_root)
+        # unittest exits with 5 when no tests were found
+        if result.returncode == 5:
+            return
 
-            if suite.countTestCases() == 0:
-                return
-
-            runner = unittest.TextTestRunner(stream=sys.stdout)
-            result = runner.run(suite)
-
-            self.assertTrue(
-                result.wasSuccessful(),
-                f'{module_name} unit tests failed: {len(result.failures)} failure(s), {len(result.errors)} error(s)'
-            )
-        finally:
-            if added_to_path and test_root in sys.path:
-                sys.path.remove(test_root)
-
-            for mod in list(sys.modules.keys()):
-                if mod not in before_modules and mod != 'unit' and not mod.startswith('unit.'):
-                    sys.modules.pop(mod, None)
-
-            self._reset_state()
+        self.assertEqual(0, result.returncode, f'{module_name} unit tests failed: exit code {result.returncode}')
 
 
     # ----------------------------------------------------------------------------------------------------------------
