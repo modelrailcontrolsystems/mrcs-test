@@ -49,7 +49,7 @@ class TestCLI(unittest.TestCase):
 
 
     def test_time_set(self):
-        CLI.popen(['mrcs_control_recorder', '-t', '-c', '-r', 1])
+        CLI.popen(['mrcs_control_recorder_service', '-t', '-c', '-r', 1])
 
         r = CLI.popen(['mrcs_cli_time', '-s', '-sr', '-ss', 4, '-sy', 1930, '-sm', 1, '-sd', 2, '-sh', 6])
         datetime = ISODatetime.construct_from_jdict(json.loads(r.stdout))
@@ -61,8 +61,8 @@ class TestCLI(unittest.TestCase):
 
 
     def test_crontab(self):
-        CLI.popen(['mrcs_control_recorder', '-t', '-c', '-r', 1])
-        CLI.popen(['mrcs_control_cron', '-t', '-c', '-l'])
+        CLI.popen(['mrcs_control_recorder_service', '-t', '-c', '-r', 1])
+        CLI.popen(['mrcs_control_cron_service', '-t', '-c', '-l'])
 
         r = CLI.popen(['mrcs_cli_time', '-s', '-sr', '-ss', 4, '-sy', 1930, '-sm', 1, '-sd', 2, '-sh', 6])
         datetime = ISODatetime.construct_from_jdict(json.loads(r.stdout))
@@ -71,7 +71,7 @@ class TestCLI(unittest.TestCase):
         message = '{"event_id": "abc", "on": "1930-01-02T06:01:00.000"}'
         CLI.popen(['mrcs_cli_publisher', '-t', 'CLK', '-b', 0, '-n', CLK.CRONTAB.value, '-m', message])
 
-        r = CLI.popen(['mrcs_control_crontab', '-t', '-l'])
+        r = CLI.popen(['mrcs_control_crontab_service', '-t', '-l'])
         jdict = json.loads(r.stdout)
         self.assertEqual(len(jdict), 1)
 
@@ -81,8 +81,8 @@ class TestCLI(unittest.TestCase):
 
 
     def test_cron(self):
-        CLI.popen(['mrcs_control_recorder', '-t', '-c', '-r', 1])
-        CLI.popen(['mrcs_control_cron', '-t', '-c', '-l'])
+        CLI.popen(['mrcs_control_recorder_service', '-t', '-c', '-r', 1])
+        CLI.popen(['mrcs_control_cron_service', '-t', '-c', '-l'])
 
         r = CLI.popen(['mrcs_cli_time', '-s', '-sr', '-ss', 4, '-sy', 1930, '-sm', 1, '-sd', 2, '-sh', 6])
         datetime = ISODatetime.construct_from_jdict(json.loads(r.stdout))
@@ -93,7 +93,7 @@ class TestCLI(unittest.TestCase):
 
         time.sleep(4)
 
-        r = CLI.popen(['mrcs_control_crontab', '-t', '-l'])
+        r = CLI.popen(['mrcs_control_crontab_service', '-t', '-l'])
         jdict = json.loads(r.stdout)
         self.assertEqual(len(jdict), 0)
 
