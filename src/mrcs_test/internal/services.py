@@ -34,27 +34,27 @@ class Services(object):
     """
 
     __BACKEND_COMMANDS = [
-        ['mrcs_control_clock_manager', '--verbose', '--drain', '--subscribe'],
-        ['mrcs_control_cron', '--verbose', '--clean', '--drain', '--run-save'],
-        ['mrcs_control_crontab', '--verbose', '--drain', '--subscribe'],
-        ['mrcs_control_mpu', '--verbose', '--drain', '--run'],
-        ['mrcs_control_recorder', '--verbose', '--drain', '--clean', '--subscribe'],
-        ['mrcs_control_router', '--verbose', '--drain', '--run'],
-        ['mrcs_control_track', '--verbose', '--drain', '--run'],
+        ['mrcs_control_clock_service', '--verbose', '--drain', '--subscribe'],
+        ['mrcs_control_cron_service', '--verbose', '--clean', '--drain', '--run-save'],
+        ['mrcs_control_crontab_service', '--verbose', '--drain', '--subscribe'],
+        ['mrcs_control_mpu_service', '--verbose', '--drain', '--run'],
+        ['mrcs_control_recorder_service', '--verbose', '--drain', '--clean', '--subscribe'],
+        ['mrcs_control_router_service', '--verbose', '--drain', '--run'],
+        ['mrcs_control_track_service', '--verbose', '--drain', '--run'],
     ]
 
     __BACKEND_POPULATE_COMMANDS = [
-        ['mrcs_control_clock_manager', '--verbose', '--drain', '--subscribe'],
-        ['mrcs_control_cron', '--verbose', '--clean', '--drain', '--run-save'],
-        ['mrcs_control_crontab', '--verbose', '--drain', '--subscribe'],
-        ['mrcs_control_mpu', '--verbose', '--populate', '--drain', '--run'],
-        ['mrcs_control_recorder', '--verbose', '--drain', '--clean', '--subscribe'],
-        ['mrcs_control_router', '--verbose', '--drain', '--run'],
-        ['mrcs_control_track', '--verbose', '--populate', '--drain', '--run'],
+        ['mrcs_control_clock_service', '--verbose', '--drain', '--subscribe'],
+        ['mrcs_control_cron_service', '--verbose', '--clean', '--drain', '--run-save'],
+        ['mrcs_control_crontab_service', '--verbose', '--drain', '--subscribe'],
+        ['mrcs_control_mpu_service', '--verbose', '--populate', '--drain', '--run'],
+        ['mrcs_control_recorder_service', '--verbose', '--drain', '--clean', '--subscribe'],
+        ['mrcs_control_router_service', '--verbose', '--drain', '--run'],
+        ['mrcs_control_track_service', '--verbose', '--populate', '--drain', '--run'],
     ]
 
     __UVICORN_COMMANDS = [
-        ['mrcs_api_uvicorn', '--verbose', '--reload']
+        ['mrcs_api_uvicorn_service', '--verbose', '--reload']
     ]
 
 
@@ -127,12 +127,15 @@ class Services(object):
                                            f'the following service(s) are already running: {conflicts}.')
 
         stdout = DEVNULL if silent else sys.stdout
-        stderr = DEVNULL if silent else sys.stderr
+        stderr = sys.stderr  # errors are always reported
         env = EnvPaths.construct().as_dict()
 
         cls.__SERVICES = []
         for command in commands:
             cmd = list(command)
+            if silent:
+                cmd = [arg for arg in cmd if arg != '--verbose']  # services then log errors only
+
             if test_mode:
                 cmd.append('--test')
 
